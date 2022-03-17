@@ -44,7 +44,7 @@ python3 examples.py
 I had two other ideas of frameworks to try out for extracting similar trends:
 
 1. Try collaborative filtering, where tweets and Reddit comments are users, and items are individual words and phrases. 
-2. Try out Associationn rule mining on a sparse matrix of words/phrases.
+2. Try out Association rule mining on a sparse matrix of words/phrases.
 
 ### Bigger Data <a name="bigdata"></a>
 The approach I've outlined here would certainly scale to a larger text corpus: the gensim tools that I used are designed to work on streams of text, so not everything needds to be held in memory at once. However there are two exceptions. 
