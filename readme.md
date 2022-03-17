@@ -31,7 +31,7 @@ python3 examples.py
 
 - `similar_trends_method.py`: this script implements the method requested in the case interview description——it works by taking 'short term' and long term word2vec models, taking the corresponding vector from the query term, and finding the most similar wodd/phrase vectors in both models. Then, the method joins short and long term lists and returns the top K results.
 - `examples.py`: this script imports the method from similar_trends_method.py and tries it out on a few trends.
-- ~`experiments_small.ipynb`: this is a notebook to show my experimenting work on a smaller version of the twitter and reddit dataset. ~
+- ~`experiments_small.ipynb`: this is a notebook to show my experimenting work on a smaller version of the twitter and reddit dataset.~
 
 ## Future Work and Considerations for More Data<a name="more"></a>
 
