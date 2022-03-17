@@ -28,7 +28,7 @@ python3 examples_trend_method.py
     3. non-stopword nouns are kept and passed into a phrasing model
 
 - `similar_trends_method.py`: this script implements the method requested in the case interview description——it works by taking 'short term' and long term word2vec models, taking the corresponding vector from the query term, and finding the most similar wodd/phrase vectors in both models. Then, the method joins short and long term lists and returns the top K results.
- `examples.py`: this script imports the method from similar_trends_method.py and tries it out on a few trends.
+- `examples.py`: this script imports the method from similar_trends_method.py and tries it out on a few trends.
 - `experiments_small.ipynb`: this is a notebook to show my experimenting work on a smaller version of the twitter and reddit dataset. 
 
 ## Future Work and Considerations for More Data<a name="more"></a>
@@ -49,4 +49,4 @@ The approach I've outlined here would certainly scale with more data: the gensim
 
 First, the data manipulation library that I used (pandas) holds all its data in memory, wwhich means that it will break if I add too many more rows. We would need to switch to a library which works on big data. I've heard that [Spark](https://spark.apache.org/) and [Dask](https://dask.org/) have pandas APIs so it would take little work to switch over.
 
-Second, my preprocessing step is very slow (about 800it/s). This is because the nltk POS tagger takes a long time to label everything. This could be run in parallel or swapped out for a newer tool.
+Second, my preprocessing step is very slow (about 800it/s). which is because the NLTK POS tagger takes a long time to label each word. Solutions couldd involve running this taskh in parallel or swapping out for a quicker POS tagger.
