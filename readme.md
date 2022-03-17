@@ -8,9 +8,9 @@
 
 
 ## Introduction and Instructions to Run <a name="introduction"></a>
-In this project, I implemented a semantic search engine for trend search, using a word2vec approach to retrieve a list of similar words/phrases to an input query. I trained a 'long-term' and short-term model, which used data across different time windows. (However in practice the results list is sorted by the long-term model only, as the short-term vectors anecdotally produce nonsensical results.)
+In this project, I implemented a semantic search engine for trend search, using a word2vec approach to retrieve a list of similar words/phrases to an input query. I trained a 'long-term' and short-term model, which used data across different time windows, and joined candidate results from both lists to create an ordering which was sensitive to association recency.
 
-This repo contains scripts for: loading data from GCP, preprocessing tweet and Reddit text, and a method for finding trends which are similar to the queried trend. I've also included a test file to demonstrate a few searches.
+This repo contains scripts for: loading data from GCP, preprocessing tweet and Reddit text, as well as an importable method for finding trends which are similar to the queried trend. I've also included a test script to demonstrate a few searches.
 
 Instructions on how to run and test models are below. This assumes that you have already placed a valid JSON key into the working directory named `nwo-sample-5f8915fdc5ec.json`.
 
@@ -23,7 +23,7 @@ python3 examples.py
 
 ## Outline <a name="outline"></a>
 
-- `download_from_gcp.py`: this script randomly selects a sample of 1 million recent rows from Twitter and Reddit databases on google cloud. Then it writes them to a parquet file for preprocessing, phrasing, and training. 
+- `download_from_gcp.py`: this script randomly selects a sample of 1 million recent rows from Twitter and Reddit databases on google cloud. Then it writes them to a parquet file for preprocessing, phrasing, and training.
 - `make_gensim_models.py`: this script preprocesses and trains the two word2vec models used in for semantic search method, and then saves copies of the trained models in the working directory. The long-term model is trained on the whole dataset (a few months), while the short-term model creates embeddings for data found in the past few weeks. Specific preprocessing steps are listed below:
     1. tokenizing data using a Twitter-specific tokenizer from NLTK
     2. data is run through an NLTK POS tagger
@@ -43,11 +43,11 @@ python3 examples.py
 ### Other Approaches <a name="other"></a>
 I had two other ideas of frameworks to try out for extracting similar trends:
 
-1. Try collaborative filtering, where tweets and Reddit comments are users, and items are individual words and phrases. 
+1. Try collaborative filtering, where tweets and Reddit comments are users, and items are individual words and phrases.
 2. Try out Association rule mining on a sparse matrix of words/phrases.
 
 ### Bigger Data <a name="bigdata"></a>
-The approach I've outlined here would certainly scale to a larger text corpus: the gensim tools that I used are designed to work on streams of text, so not everything needds to be held in memory at once. However there are two exceptions. 
+The approach I've outlined here would certainly scale to a larger text corpus: the gensim tools that I used are designed to work on streams of text, so not everything needds to be held in memory at once. However there are two exceptions.
 
 First, the data manipulation library that I used (pandas) holds all its data in memory, so it might break if I add too many more rows. I would need to switch to a library which holds data data on disk and streams into memory when needed. I've heard that [Spark](https://spark.apache.org/) and [Dask](https://dask.org/) have pandas APIs so it would take little work to switch over.
 
