@@ -28,9 +28,12 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200):
         lt_scores[word] = relevance
 
 
-    # do a full join on these lists
+
+    # do a full join on the two lists
     all_words = set([w for w,_ in long_term_trends] + [w for w,_ in short_term_trends])
 
     joined_list = [(word,st_scores[word],lt_scores[word]) for word in all_words]
 
-    return [w for w, st_score, lt_score in sorted(joined_list, key=lambda tup: tup[2], reverse=True)[:k]]
+    # then sort by: (st * lt) / (st + lt)
+
+    return [w for w, st_score, lt_score in sorted(joined_list, key=lambda tup: (tup[1]*tup[2])/(tup[1]+tup[2]), reverse=True)[:k]]

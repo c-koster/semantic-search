@@ -6,7 +6,7 @@ used by the similar trends method.
 My process for creating these models is outlined briefly below (also see the readme)
 1. load and preprocess:
     - tokenize and tag each row of text in my data using nltk's tweet tokenizer
-    - keep the nouns and verbs, remove links and emojis
+    - keep the nouns remove links and emojis
     - ( could paste the proper noun tags together here, but I opted to use a phraser later on)
 
 2. concatenate the datasets and train a 'phraser model' to place an underscore between commonly occuring word groupings
@@ -133,7 +133,7 @@ apply_phrases = lambda sentence: sentence_to_bi_grams(phraser,sentence)
 
 df_all['text_with_phrases'] = df_all['words_no_@#'].apply(apply_phrases) + df_all['words_@#']
 
-print("some examples of phrases for your viewing pleasure while the w2v models train")
+print("some examples of phrases for you to peruse while the w2v models train")
 for phrase, score in sorted(phrases.find_phrases(df_all['text_preprocessed']).items(), key=lambda tup: tup[1],reverse=True)[:20]:
     print(phrase, score)
 
@@ -142,5 +142,5 @@ model = Word2Vec(sentences=df_all["text_with_phrases"], vector_size=100, window=
 model.wv.save('long_term_vectors.kv')
 
 # created_utc of 1610496000 is Wednesday, January 13, 2021 12:00:00 AM (GMT)
-model_st = Word2Vec(sentences=df_all[df_all.created_utc > 1610496000]["text_with_phrases"])
+model_st = Word2Vec(sentences=df_all[df_all.created_utc > 1610496000]["text_with_phrases"], vector_size=100, window=10, min_count=2, workers=4)
 model_st.wv.save('short_term_vectors.kv')
