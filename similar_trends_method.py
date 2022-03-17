@@ -34,11 +34,3 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200):
     joined_list = [(word,st_scores[word],lt_scores[word]) for word in all_words]
 
     return [w for w, st_score, lt_score in sorted(joined_list, key=lambda tup: tup[2], reverse=True)[:k]]
-
-K = 5
-test_terms = ["augmented_reality", "iphone", "elon musk", "bike", "joe biden",
-"kombucha", "bitcoin", "student loans","gold","pepsi","virtual reality","@realdonaldtrump"]
-
-for i in test_terms:
-    trends = w2v_based_top_trends(i,K)
-    print( "Query Term: {}\nResults: {}\n".format(i, trends) )
