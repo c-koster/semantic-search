@@ -102,16 +102,18 @@ def preprocess_tweets(text: str) -> List[str]:
     Returns a list of words.
     """
     tokens = tweet_tokenizer.tokenize(text)
-    tags = [(token,'NNP') for token in tokens]#pos_tag(tokens)
-
+    #tags = nlp(text)
+    tags = [(token,"NNP") for token in tokens] #pos_tag(tokens)
     words_out: List[str] = []
 
-    for word,tag in tags:
+
+    for word, tag in tags:
+        #word = token.text
+        #tag  = token.tag_
 
         if tag not in GOOD_TAGS or word[:4] == "http" or len(word) < 3 or word in STOP_WORDS_STOP_EMOJIS:
             continue
         else:
-            # we want to join contiguous proper nouns
             words_out.append(word.lower())
 
     return words_out
@@ -159,8 +161,8 @@ for phrase, score in sorted(phrases.find_phrases(df_all['text_preprocessed']).it
 
 
 model = Word2Vec(sentences=df_all["text_with_phrases"], vector_size=100, window=10, min_count=2, workers=4)
-model.wv.save('long_term_vectors2.kv')
+model.wv.save('long_term_vectors_no_POS.kv')
 
 # created_utc of 1610496000 is Wednesday, January 13, 2021 12:00:00 AM (GMT)
 model_st = Word2Vec(sentences=df_all[df_all.created_utc > 1610496000]["text_with_phrases"], vector_size=100, window=10, min_count=2, workers=4)
-model_st.wv.save('short_term_vectors2.kv')
+model_st.wv.save('short_term_vectors_no_POS.kv')
