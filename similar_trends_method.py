@@ -17,7 +17,7 @@ def mmr(doc_embedding: np.ndarray,
         diversity: float = 0.8) -> List[str]:
 
     """
-    adapted from here -- (https://maartengr.github.io/BERTopic/api/mmr.html)
+    Took this function from here -- (https://maartengr.github.io/BERTopic/api/mmr.html)
 
     Calculate Maximal Marginal Relevance (MMR) between candidate keywords and the document.
 
