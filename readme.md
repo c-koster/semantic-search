@@ -47,8 +47,8 @@ I had two other ideas of frameworks to try out for extracting similar trends:
 2. Try out Association rule mining on a sparse matrix of words/phrases.
 
 ### Bigger Data <a name="bigdata"></a>
-The approach I've outlined here would certainly scale to a larger text corpus: the gensim tools that I used are designed to work on streams of text, so not everything needds to be held in memory at once. However there are two exceptions.
+The approach I've outlined here would certainly scale to a larger text corpus: the gensim tools that I used are designed to work on streams of text, so not everything needs to be held in memory at once. However there are two exceptions.
 
 First, the data manipulation library that I used (pandas) holds all its data in memory, so it might break if I add too many more rows. I would need to switch to a library which holds data data on disk and streams into memory when needed. I've heard that [Spark](https://spark.apache.org/) and [Dask](https://dask.org/) have pandas APIs so it would take little work to switch over.
 
-Second, my preprocessing step is very slow (about 800it/s). which is because the NLTK POS tagger takes a long time to label each word. Solutions couldd involve running this task in parallel, or swapping out for a quicker POS tagger.
+Second, my preprocessing step is very slow (about 800it/s). which is because the NLTK POS tagger takes a long time to label each word. Solutions could involve running this task in parallel, or swapping out for a quicker POS tagger.
