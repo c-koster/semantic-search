@@ -31,7 +31,7 @@ def download_query_data(QUERY: str, outfile: str) -> None:
 
 
 # set some consts
-nrows = 1_000_000
+nrows = 4_000_000
 
 # reddit timestamps are stored as integers.
 unix_since_reddit: int = 1604966400

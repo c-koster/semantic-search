@@ -17,19 +17,20 @@ My process for creating these models is outlined briefly below (also see the rea
 
 """
 
-# imports
 import os
 from typing import List
 
 # tagging and data storage
 import pandas as pd
 from nltk.tokenize import TweetTokenizer
-from nltk.tag import pos_tag
+from nltk import pos_tag
+import spacy
+from spacy.tokens import Doc
 from spacy.lang.en.stop_words import STOP_WORDS
+
 import emoji
 
 from gensim.models import Word2Vec
-
 
 from tqdm import tqdm
 tqdm.pandas() # .apply progress bars
@@ -68,6 +69,25 @@ to_int = lambda timedata: timedata.timestamp()
 df_tweets['created_utc'] = df_tweets.pop('created_at').apply(to_int).astype('int64')
 
 
+# next, we want to tokenize and tag the text.
+class SpacyTweetTokenizer:
+    """
+    NLTK has a decent tweet tokenizer but an awful pos tagger, so we create a spacy
+    pipeline but replace its tokenizer function with our own str -> spacy.tokens.Doc mapping.
+    """
+    def __init__(self, vocab):
+        self.vocab = vocab
+        self.tokenizer = TweetTokenizer()
+
+    def __call__(self, text: str) -> Doc:
+        words = self.tokenizer.tokenize(text)
+        return Doc(nlp.vocab, words=words)
+
+nlp = spacy.load("en_core_web_md")
+
+# a little trick: over-writing the tokenizer. here's a snippet from the docs about this:
+# https://spacy.io/usage/linguistic-features#custom-tokenizer
+nlp.tokenizer = SpacyTweetTokenizer(nlp.vocab)
 tweet_tokenizer = TweetTokenizer()
 
 def preprocess_tweets(text: str) -> List[str]:
@@ -82,7 +102,7 @@ def preprocess_tweets(text: str) -> List[str]:
     Returns a list of words.
     """
     tokens = tweet_tokenizer.tokenize(text)
-    tags = pos_tag(tokens)
+    tags = [(token,'NNP') for token in tokens]#pos_tag(tokens)
 
     words_out: List[str] = []
 
@@ -139,8 +159,8 @@ for phrase, score in sorted(phrases.find_phrases(df_all['text_preprocessed']).it
 
 
 model = Word2Vec(sentences=df_all["text_with_phrases"], vector_size=100, window=10, min_count=2, workers=4)
-model.wv.save('long_term_vectors.kv')
+model.wv.save('long_term_vectors2.kv')
 
 # created_utc of 1610496000 is Wednesday, January 13, 2021 12:00:00 AM (GMT)
 model_st = Word2Vec(sentences=df_all[df_all.created_utc > 1610496000]["text_with_phrases"], vector_size=100, window=10, min_count=2, workers=4)
-model_st.wv.save('short_term_vectors.kv')
+model_st.wv.save('short_term_vectors2.kv')

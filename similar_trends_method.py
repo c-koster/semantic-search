@@ -107,11 +107,10 @@ def safe_vec(model, key: str) ->  np.ndarray:
 
 
 
-
-
 def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.5):
     """
-
+    Method outlined by the case interview. takes a query term as input, and searches
+    short-term and long-term vector embeddings for results.
 
     Parameters:
         A query term
@@ -130,6 +129,7 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.
 
     # do a full join on the two lists
     all_words = set(st_scores.keys()).union(set(lt_scores.keys()))
+
     if len(all_words) == 0:
         return ['did not find anything']
 
