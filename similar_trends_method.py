@@ -5,8 +5,8 @@ from sklearn.metrics.pairwise import cosine_similarity
 import numpy as np
 
 
-model    = KeyedVectors.load('long_term_vectors.kv')
-model_st = KeyedVectors.load('short_term_vectors.kv')
+model    = KeyedVectors.load('long_term_vectors_no_POS.kv')
+model_st = KeyedVectors.load('short_term_vectors_no_POS.kv')
 
 
 
@@ -127,8 +127,8 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.
     st_scores = query_as_dict(model_st,parsed_qt,k_inner)
     lt_scores = query_as_dict(model, parsed_qt,k_inner)
 
-    # do a full join on the two lists
-    all_words = set(st_scores.keys()).union(set(lt_scores.keys()))
+    # do a left join on the two lists (just use scores from lt model. the intersection is typically quite small)
+    all_words = set(lt_scores.keys())
 
     if len(all_words) == 0:
         return ['did not find anything']
@@ -139,12 +139,13 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.
     # then sort by: (st * lt) / (st + lt)
     # but check first if the denominator is 0 to avoid a division error
     safe_division = lambda tup: (tup[1]*tup[2])/(tup[1]+tup[2]) if (tup[1] + tup[2] != 0) else 0
-    joined_ordered = [w for w, st_score, lt_score in sorted(joined_list, key=safe_division, reverse=True)]#[:k]]
+    joined_ordered = [w for w, st_score, lt_score in sorted(joined_list, key=safe_division, reverse=True)]
 
-    return mmr(
-        doc_embedding   = [safe_vec(model, parsed_qt)],
-        word_embeddings = [safe_vec(model, c) for c in joined_ordered],
+    ordered_diverse = mmr(
+        doc_embedding   = [safe_vec(model_st, parsed_qt)],
+        word_embeddings = [safe_vec(model_st, c) for c in joined_ordered],
         words = joined_ordered,
         top_n = k,
         diversity=L
     )
+    return ordered_diverse

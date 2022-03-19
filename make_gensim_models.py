@@ -90,6 +90,7 @@ nlp = spacy.load("en_core_web_md")
 nlp.tokenizer = SpacyTweetTokenizer(nlp.vocab)
 tweet_tokenizer = TweetTokenizer()
 
+
 def preprocess_tweets(text: str) -> List[str]:
     """
     Pipeline for processing text. The trick here is to get all useful words into a
@@ -102,29 +103,70 @@ def preprocess_tweets(text: str) -> List[str]:
     Returns a list of words.
     """
     tokens = tweet_tokenizer.tokenize(text)
-    #tags = nlp(text)
-    tags = [(token,"NNP") for token in tokens] #pos_tag(tokens)
+    tags = pos_tag(tokens)
     words_out: List[str] = []
 
-
     for word, tag in tags:
-        #word = token.text
-        #tag  = token.tag_
-
+        word = token.text
+        tag  = token.tag_
         if tag not in GOOD_TAGS or word[:4] == "http" or len(word) < 3 or word in STOP_WORDS_STOP_EMOJIS:
             continue
         else:
             words_out.append(word.lower())
-
     return words_out
 
 
+
+
+def is_url(text: str) -> bool:
+    """
+    helper function for the below to identify if a token should be included in the output word list.
+    Parameter(s):
+        a string or token
+
+    returns true if the string contains any of / www .
+    """
+    for ch in ["www","/","."]:
+        if ch in text:
+            return True
+
+    return False
+
+
+
+
+def preprocess_tweets_2(text: str) -> List[str]:
+    """
+    Another pipeline for processing text. This one tokenizes but does not run a POS tagger,
+    so it's about ten times faster. Better removal for links
+
+    Parameters:
+        A string containing twitter or reddtit text
+
+    Returns a list of words.
+    """
+    tokens = tweet_tokenizer.tokenize(text)
+
+    words_out: List[str] = []
+
+
+    for token in tokens:
+
+        if token[:4] == "http" or len(token) < 2 or token in STOP_WORDS_STOP_EMOJIS:
+            continue
+        elif is_url(token):
+            continue
+        else:
+            words_out.append(token.lower())
+
+    return words_out
+
 # run the above preprocessing function
 print("pre-processing Twitter text")
-df_tweets["text_preprocessed"] = df_tweets["tweet"].progress_apply(preprocess_tweets)
+df_tweets["text_preprocessed"] = df_tweets["tweet"].progress_apply(preprocess_tweets_2)
 
 print("pre-processing Reddit text")
-df_reddit["text_preprocessed"] = df_reddit["body"].progress_apply(preprocess_tweets)
+df_reddit["text_preprocessed"] = df_reddit["body"].progress_apply(preprocess_tweets_2)
 
 
 # now add the two together before we extract phrases.. do this by calling their columns
