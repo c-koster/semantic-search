@@ -106,7 +106,6 @@ def safe_vec(model, key: str) ->  np.ndarray:
         return np.zeros(100)
 
 
-
 def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.5):
     """
     Method outlined by the case interview. takes a query term as input, and searches
@@ -135,16 +134,20 @@ def w2v_based_top_trends(qt: str, k: int = 20, k_inner: int = 200, L: float = 0.
 
     joined_list = [(word,st_scores[word],lt_scores[word]) for word in all_words]
 
+    threshold = .90 # this filter is to remove synonyms as we are looking for similar
+    # trends rather than exact word synonyms
+    joined_filtered = [word for word,_,relevance in joined_list if relevance < threshold]
+
 
     # then sort by: (st * lt) / (st + lt)
     # but check first if the denominator is 0 to avoid a division error
-    safe_division = lambda tup: (tup[1]*tup[2])/(tup[1]+tup[2]) if (tup[1] + tup[2] != 0) else 0
-    joined_ordered = [w for w, st_score, lt_score in sorted(joined_list, key=safe_division, reverse=True)]
+    # safe_division = lambda tup: (tup[1]*tup[2])/(tup[1]+tup[2]) if (tup[1] + tup[2] != 0) else 0
+    #joined_ordered = [w for w, st_score, lt_score in sorted(joined_list, key=safe_division, reverse=True)]
 
     ordered_diverse = mmr(
-        doc_embedding   = [safe_vec(model_st, parsed_qt)],
-        word_embeddings = [safe_vec(model_st, c) for c in joined_ordered],
-        words = joined_ordered,
+        doc_embedding   = [safe_vec(model, parsed_qt)],
+        word_embeddings = [safe_vec(model, c) for c in joined_filtered],
+        words = joined_filtered,
         top_n = k,
         diversity=L
     )
