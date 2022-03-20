@@ -10,7 +10,7 @@ test_terms = ["augmented_reality", "iphone", "elon musk", "bike", "joe biden",
 
 data = []
 for i in test_terms:
-    trends = w2v_based_top_trends(i,K)
+    trends = w2v_based_top_trends(i,K,500)
     print( "Query Term: {}\nResults: {}\n".format(i, trends) )
     data.append([i] + trends)
 
